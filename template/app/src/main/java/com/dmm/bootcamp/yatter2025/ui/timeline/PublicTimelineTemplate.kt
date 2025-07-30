@@ -4,11 +4,15 @@ import android.graphics.Paint.Align
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.Scaffold
 import androidx.compose.material.Surface
+import androidx.compose.material.Text
+import androidx.compose.material.TopAppBar
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.PullRefreshState
 import androidx.compose.material.pullrefresh.pullRefresh
@@ -30,29 +34,40 @@ fun PublicTimelineTemplate(
     onRefresh: () -> Unit,
 ) {
     val pullRefreshState = rememberPullRefreshState(isRefreshing, onRefresh)
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .pullRefresh(pullRefreshState),
-        contentAlignment = Alignment.Center,
-    ) {
-    LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(8.dp),
-    ) {
-        items(yweetList) { item ->
-            YweetRow(yweetBindingModel = item)
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(text = "タイムライン")
+                }
+            )
+        }
+    ) { paddingValues ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .pullRefresh(pullRefreshState),
+            contentAlignment = Alignment.Center,
+        ) {
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(8.dp),
+            ) {
+                items(yweetList) { item ->
+                    YweetRow(yweetBindingModel = item)
+                }
+            }
+            PullRefreshIndicator(
+                refreshing = isRefreshing,
+                state = pullRefreshState,
+                modifier = Modifier.align(Alignment.TopCenter)
+            )
+            if (isLoading) {
+                CircularProgressIndicator()
+            }
         }
     }
-    PullRefreshIndicator(
-        refreshing = isRefreshing,
-        state = pullRefreshState,
-        modifier = Modifier.align(Alignment.TopCenter)
-    )
-    if (isLoading) {
-        CircularProgressIndicator()
-    }
-}
 }
 
 @Preview
