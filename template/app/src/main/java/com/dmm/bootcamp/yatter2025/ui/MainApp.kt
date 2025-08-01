@@ -7,13 +7,11 @@ import androidx.compose.runtime.compositionLocalOf
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.navigation.NavController
-import androidx.navigation.NavHost
+import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import com.dmm.bootcamp.yatter2025.ui.login.LoginDestination
 import com.dmm.bootcamp.yatter2025.ui.timeline.PublicTimelineDestination
 import org.koin.androidx.compose.getViewModel
-import androidx.navigation.compose.NavHost
-
 
 val LocalNavController = compositionLocalOf<NavController> {
     error("Not set a NavController!")
@@ -24,13 +22,14 @@ fun MainApp(
     mainViewModel: MainViewModel = getViewModel(),
 ) {
     val navController = rememberNavController()
-    val startDestination =
-        mainViewModel.startDestination.collectAsState(initial = null).value
+    val startDestination = mainViewModel.startDestination.collectAsState(initial = null).value
+
     LifecycleEventEffect(
         event = Lifecycle.Event.ON_CREATE,
     ) {
         mainViewModel.onCreate()
     }
+
     CompositionLocalProvider(
         LocalNavController provides navController,
     ) {
@@ -38,7 +37,7 @@ fun MainApp(
             NavHost(
                 navController = navController,
                 startDestination = startDestination.route
-            ){
+            ) {
                 LoginDestination.createNode(this)
                 PublicTimelineDestination.createNode(this)
             }
